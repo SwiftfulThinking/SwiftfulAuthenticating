@@ -12,10 +12,26 @@ public struct UserAuthInfo: Codable, Sendable {
     public let isAnonymous: Bool
     public let authProviders: [AuthProviderOption]
     public let displayName: String?
+    public let firstName: String?
+    public let lastName: String?
     public let phoneNumber: String?
     public let photoURL: URL?
     public let creationDate: Date?
     public let lastSignInDate: Date?
+    
+    public var name: String? {
+        if let displayName {
+            return displayName
+        }
+        
+        if let firstName, let lastName {
+            return firstName + " " + lastName
+        } else if let firstName {
+            return firstName
+        }
+        
+        return lastName
+    }
 
     public init(
         uid: String,
@@ -23,6 +39,8 @@ public struct UserAuthInfo: Codable, Sendable {
         isAnonymous: Bool = false,
         authProviders: [AuthProviderOption] = [],
         displayName: String? = nil,
+        firstName: String? = nil,
+        lastName: String? = nil,
         phoneNumber: String? = nil,
         photoURL: URL? = nil,
         creationDate: Date? = nil,
@@ -33,6 +51,8 @@ public struct UserAuthInfo: Codable, Sendable {
         self.isAnonymous = isAnonymous
         self.authProviders = authProviders
         self.displayName = displayName
+        self.firstName = firstName
+        self.lastName = lastName
         self.phoneNumber = phoneNumber
         self.photoURL = photoURL
         self.creationDate = creationDate
@@ -45,6 +65,8 @@ public struct UserAuthInfo: Codable, Sendable {
         case isAnonymous = "is_anonymous"
         case authProviders = "auth_providers"
         case displayName = "display_name"
+        case firstName = "first_name"
+        case lastName = "last_name"
         case phoneNumber = "phone_number"
         case photoURL = "photo_url"
         case creationDate = "creation_date"
@@ -86,6 +108,9 @@ public struct UserAuthInfo: Codable, Sendable {
             "uauth_\(CodingKeys.isAnonymous.rawValue)": isAnonymous,
             "uauth_\(CodingKeys.authProviders.rawValue)": authProviders.map({ $0.rawValue }).sorted().joined(separator: ", "),
             "uauth_\(CodingKeys.displayName.rawValue)": displayName,
+            "uauth_\(CodingKeys.firstName.rawValue)": firstName,
+            "uauth_\(CodingKeys.lastName.rawValue)": lastName,
+            "uauth_name": name,
             "uauth_\(CodingKeys.phoneNumber.rawValue)": phoneNumber,
             "uauth_\(CodingKeys.photoURL.rawValue)": photoURL,
             "uauth_\(CodingKeys.creationDate.rawValue)": creationDate,

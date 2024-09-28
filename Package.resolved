@@ -1,0 +1,24 @@
+{
+  "originHash" : "e2df05a1ed69d4ebd0072946e940a0a5c4f423e7c354c701b736f18b20fb4039",
+  "pins" : [
+    {
+      "identity" : "sendabledictionary",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwiftfulThinking/SendableDictionary.git",
+      "state" : {
+        "revision" : "87eca8178bb0b64a2f1a6191ac42b2e73620db07",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "swiftfullogging",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwiftfulThinking/SwiftfulLogging.git",
+      "state" : {
+        "revision" : "65f321ae99d6380e01e7d103ca9c3fd2292545c4",
+        "version" : "1.0.4"
+      }
+    }
+  ],
+  "version" : 3
+}

@@ -7,10 +7,18 @@
 
 import Foundation
 
-public enum AuthProviderOption: String, Codable, Sendable {
+public enum AuthProviderOption: String, Codable, Sendable, CaseIterable {
     case google
     case apple
     case email
+    
+    public init?(providerId: String) {
+        if let value = AuthProviderOption.allCases.first(where: { $0.providerId == providerId }) {
+            self = value
+        } else {
+            return nil
+        }
+    }
 
     var providerId: String {
         switch self {

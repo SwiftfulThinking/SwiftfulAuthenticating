@@ -101,7 +101,7 @@ public struct UserAuthInfo: Codable, Sendable {
         )
     }
 
-    var eventParameters: [String: Any] {
+    public var eventParameters: [String: Any] {
         let dict: [String: Any?] = [
             "uauth_\(CodingKeys.uid.rawValue)": uid,
             "uauth_\(CodingKeys.email.rawValue)": email,

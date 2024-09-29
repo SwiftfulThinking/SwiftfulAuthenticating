@@ -11,6 +11,10 @@ public enum AuthProviderOption: String, Codable, Sendable, CaseIterable {
     case google
     case apple
     case email
+    case phone
+    case facebook
+    case gameCenter
+    case github
     
     public init?(providerId: String) {
         if let value = AuthProviderOption.allCases.first(where: { $0.providerId == providerId }) {
@@ -25,10 +29,10 @@ public enum AuthProviderOption: String, Codable, Sendable, CaseIterable {
         case .google:       return "google.com"
         case .apple:        return "apple.com"
         case .email:        return "password"
-//        case .phone:        return "phone"
-//        case .facebook:     return "facebook.com"
-//        case .gameCenter:   return "gc.apple.com"
-//        case .github:       return "github.com"
+        case .phone:        return "phone"
+        case .facebook:     return "facebook.com"
+        case .gameCenter:   return "gc.apple.com"
+        case .github:       return "github.com"
         }
     }
 

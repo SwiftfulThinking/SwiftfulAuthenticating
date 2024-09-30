@@ -6,10 +6,22 @@
 //
 
 
-public enum SignInOption: String, Sendable {
-    case apple, google, anonymous
+public enum SignInOption: Sendable {
+    case apple, anonymous
+    case google(GIDClientID: String)
+    
+    public var stringValue: String {
+        switch self {
+        case .apple:
+            return "apple"
+        case .anonymous:
+            return "anonymous"
+        case .google:
+            return "google"
+        }
+    }
     
     var eventParameters: [String: Any] {
-        ["sign_in_option": rawValue]
+        ["sign_in_option": stringValue]
     }
 }

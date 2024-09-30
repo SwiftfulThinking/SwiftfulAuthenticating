@@ -7,7 +7,7 @@
 
 
 public enum SignInOption: String, Sendable {
-    case apple, anonymous
+    case apple, google, anonymous
     
     var eventParameters: [String: Any] {
         ["sign_in_option": rawValue]

@@ -5,7 +5,6 @@
 //  Created by Nick Sarno on 9/28/24.
 //
 
-
 public enum SignInOption: Sendable {
     case apple, anonymous
     case google(GIDClientID: String)

@@ -40,9 +40,23 @@ public class AuthManager {
             }
         }
     }
-
+    
     @discardableResult
-    public func signIn(option: SignInOption) async throws -> (user: UserAuthInfo, isNewUser: Bool) {
+    public func signInAnonymous() async throws -> (user: UserAuthInfo, isNewUser: Bool) {
+        try await signIn(option: .anonymous)
+    }
+    
+    @discardableResult
+    public func signInApple() async throws -> (user: UserAuthInfo, isNewUser: Bool) {
+        try await signIn(option: .apple)
+    }
+    
+    @discardableResult
+    public func signInGoogle(GIDClientID: String) async throws -> (user: UserAuthInfo, isNewUser: Bool) {
+        try await signIn(option: .google(GIDClientID: GIDClientID))
+    }
+
+    private func signIn(option: SignInOption) async throws -> (user: UserAuthInfo, isNewUser: Bool) {
         self.logger.trackEvent(event: Event.signInStart(option: option))
 
         do {

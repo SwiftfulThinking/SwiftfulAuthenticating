@@ -13,7 +13,12 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "SwiftfulAuthenticating",
-            targets: ["SwiftfulAuthenticating"]),
+            targets: ["SwiftfulAuthenticating"]
+        ),
+        .library(
+            name: "SwiftfulAuthUI",
+            targets: ["SwiftfulAuthUI"]
+        ),
     ],
     dependencies: [
         // Here we add the dependency for the SendableDictionary package
@@ -27,6 +32,9 @@ let package = Package(
             dependencies: [
                 .product(name: "SwiftfulLogging", package: "SwiftfulLogging")
             ]
+        ),
+        .target(
+            name: "SwiftfulAuthUI"
         ),
         .testTarget(
             name: "SwiftfulAuthenticatingTests",

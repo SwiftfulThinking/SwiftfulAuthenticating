@@ -18,7 +18,7 @@ public class MockAuthService: AuthService {
         currentUser
     }
 
-    public func addAuthenticatedUserListener() -> AsyncStream<UserAuthInfo?> {
+    public func addAuthenticatedUserListener(onListenerAttached: (any NSObjectProtocol) -> Void) -> AsyncStream<UserAuthInfo?> {
         AsyncStream { continuation in
             Task {
                 for await value in $currentUser.values {

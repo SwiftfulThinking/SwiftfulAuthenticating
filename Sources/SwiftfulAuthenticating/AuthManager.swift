@@ -8,6 +8,7 @@ public class AuthManager {
     private let service: AuthService
 
     public private(set) var auth: UserAuthInfo?
+    private var listener: (any NSObjectProtocol)?
 
     public init(service: AuthService, logger: LogManager = LogManager(services: [])) {
         self.service = service
@@ -27,7 +28,9 @@ public class AuthManager {
 
     private func addAuthListener() {
         Task {
-            for await value in service.addAuthenticatedUserListener() {
+            for await value in service.addAuthenticatedUserListener(onListenerAttached: { listener in
+                self.listener = listener
+            }) {
                 self.auth = value
 
                 if let value {

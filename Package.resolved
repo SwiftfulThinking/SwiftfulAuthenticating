@@ -1,5 +1,5 @@
 {
-  "originHash" : "e2df05a1ed69d4ebd0072946e940a0a5c4f423e7c354c701b736f18b20fb4039",
+  "originHash" : "22e3f8dc518c1f27b726b03f2887e3ca7e4cde1fa49e90ffc0a13adcd17db04b",
   "pins" : [
     {
       "identity" : "sendabledictionary",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SwiftfulThinking/SwiftfulLogging.git",
       "state" : {
-        "revision" : "65f321ae99d6380e01e7d103ca9c3fd2292545c4",
-        "version" : "1.0.4"
+        "revision" : "de4f3398e557ede01bc5407c802eb7769d804e5e",
+        "version" : "1.0.5"
       }
     }
   ],

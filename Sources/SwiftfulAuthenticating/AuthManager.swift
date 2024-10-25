@@ -35,7 +35,7 @@ public class AuthManager {
 
                 if let value {
                     self.logger.identifyUser(userId: value.uid, name: value.displayName, email: value.email)
-                    self.logger.addUserProperties(dict: value.eventParameters.sendable())
+                    self.logger.addUserProperties(dict: value.eventParameters.sendable(), isHighPriority: true)
                     self.logger.trackEvent(event: Event.authListenerSuccess(user: value))
                 } else {
                     self.logger.trackEvent(event: Event.authlistenerEmpty)

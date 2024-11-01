@@ -27,6 +27,10 @@ public class MockAuthService: AuthService {
             }
         }
     }
+    
+    public func removeAuthenticatedUserListener(listener: any NSObjectProtocol) {
+        
+    }
 
     public func signOut() throws {
         currentUser = nil

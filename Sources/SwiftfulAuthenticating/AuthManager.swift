@@ -27,6 +27,12 @@ public class AuthManager {
     }
 
     private func addAuthListener() {
+        // Remove old/previous listener
+        if let listener {
+            service.removeAuthenticatedUserListener(listener: listener)
+        }
+        
+        // Attach new listener
         Task {
             for await value in service.addAuthenticatedUserListener(onListenerAttached: { listener in
                 self.listener = listener
@@ -61,6 +67,14 @@ public class AuthManager {
 
     private func signIn(option: SignInOption) async throws -> (user: UserAuthInfo, isNewUser: Bool) {
         self.logger.trackEvent(event: Event.signInStart(option: option))
+        
+        defer {
+            // After user's auth changes, re-attach auth listener.
+            // This isn't usually necessary, but if the user is "linking" to an anonymous account,
+            // The Firebase auth listener does not auto-publish new value (since it's the same UID).
+            // Re-adding a new listener should catch any catch edge cases.
+            addAuthListener()
+        }
 
         do {
             let (user, isNewUser) = try await service.signIn(option: option)

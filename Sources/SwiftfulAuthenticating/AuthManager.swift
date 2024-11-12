@@ -8,12 +8,12 @@ public class AuthManager {
 
     public private(set) var auth: UserAuthInfo?
     private var listener: (any NSObjectProtocol)?
+    private var taskListener: Task<Void, Error>?
 
     public init(service: AuthService, logger: AuthLogger? = nil) {
         self.service = service
         self.logger = logger
         self.auth = service.getAuthenticatedUser()
-
         self.addAuthListener()
     }
 
@@ -32,26 +32,33 @@ public class AuthManager {
         }
         
         // Attach new listener
-        Task {
+        taskListener?.cancel()
+        taskListener = Task {
             for await value in service.addAuthenticatedUserListener(onListenerAttached: { listener in
                 self.listener = listener
             }) {
-                self.auth = value
-
-                if let value {
-                    self.logger?.identifyUser(userId: value.uid, name: value.displayName, email: value.email)
-                    self.logger?.addUserProperties(dict: value.eventParameters, isHighPriority: true)
-                    self.logger?.trackEvent(event: Event.authListenerSuccess(user: value))
-                } else {
-                    self.logger?.trackEvent(event: Event.authlistenerEmpty)
-                }
+                setCurrentAuth(auth: value)
             }
+        }
+    }
+    
+    private func setCurrentAuth(auth value: UserAuthInfo?) {
+        self.auth = value
+
+        if let value {
+            self.logger?.identifyUser(userId: value.uid, name: value.displayName, email: value.email)
+            self.logger?.addUserProperties(dict: value.eventParameters, isHighPriority: true)
+            self.logger?.trackEvent(event: Event.authListenerSuccess(user: value))
+        } else {
+            self.logger?.trackEvent(event: Event.authlistenerEmpty)
         }
     }
     
     @discardableResult
     public func signInAnonymous() async throws -> (user: UserAuthInfo, isNewUser: Bool) {
-        try await signIn(option: .anonymous)
+        let result = try await signIn(option: .anonymous)
+        setCurrentAuth(auth: result.user)
+        return result
     }
     
     @discardableResult
@@ -76,9 +83,10 @@ public class AuthManager {
         }
 
         do {
-            let (user, isNewUser) = try await service.signIn(option: option)
-            logger?.trackEvent(event: Event.signInSuccess(option: option, user: user, isNewUser: isNewUser))
-            return (user, isNewUser)
+            let result = try await service.signIn(option: option)
+            setCurrentAuth(auth: result.user)
+            logger?.trackEvent(event: Event.signInSuccess(option: option, user: result.user, isNewUser: result.isNewUser))
+            return result
         } catch {
             logger?.trackEvent(event: Event.signInFail(error: error))
             throw error

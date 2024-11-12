@@ -20,18 +20,11 @@ let package = Package(
             targets: ["SwiftfulAuthUI"]
         ),
     ],
-    dependencies: [
-        // Here we add the dependency for the SendableDictionary package
-        .package(url: "https://github.com/SwiftfulThinking/SwiftfulLogging.git", "1.0.0"..<"2.0.0")
-    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "SwiftfulAuthenticating",
-            dependencies: [
-                .product(name: "SwiftfulLogging", package: "SwiftfulLogging")
-            ]
+            name: "SwiftfulAuthenticating"
         ),
         .target(
             name: "SwiftfulAuthUI"

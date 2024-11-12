@@ -1,16 +1,15 @@
 import Foundation
-import SwiftfulLogging
 
 @MainActor
 @Observable
 public class AuthManager {
-    private let logger: LogManager
+    private let logger: AuthLogger?
     private let service: AuthService
 
     public private(set) var auth: UserAuthInfo?
     private var listener: (any NSObjectProtocol)?
 
-    public init(service: AuthService, logger: LogManager = LogManager(services: [])) {
+    public init(service: AuthService, logger: AuthLogger? = nil) {
         self.service = service
         self.logger = logger
         self.auth = service.getAuthenticatedUser()
@@ -40,11 +39,11 @@ public class AuthManager {
                 self.auth = value
 
                 if let value {
-                    self.logger.identifyUser(userId: value.uid, name: value.displayName, email: value.email)
-                    self.logger.addUserProperties(dict: value.eventParameters.sendable(), isHighPriority: true)
-                    self.logger.trackEvent(event: Event.authListenerSuccess(user: value))
+                    self.logger?.identifyUser(userId: value.uid, name: value.displayName, email: value.email)
+                    self.logger?.addUserProperties(dict: value.eventParameters, isHighPriority: true)
+                    self.logger?.trackEvent(event: Event.authListenerSuccess(user: value))
                 } else {
-                    self.logger.trackEvent(event: Event.authlistenerEmpty)
+                    self.logger?.trackEvent(event: Event.authlistenerEmpty)
                 }
             }
         }
@@ -66,7 +65,7 @@ public class AuthManager {
     }
 
     private func signIn(option: SignInOption) async throws -> (user: UserAuthInfo, isNewUser: Bool) {
-        self.logger.trackEvent(event: Event.signInStart(option: option))
+        self.logger?.trackEvent(event: Event.signInStart(option: option))
         
         defer {
             // After user's auth changes, re-attach auth listener.
@@ -78,36 +77,36 @@ public class AuthManager {
 
         do {
             let (user, isNewUser) = try await service.signIn(option: option)
-            logger.trackEvent(event: Event.signInSuccess(option: option, user: user, isNewUser: isNewUser))
+            logger?.trackEvent(event: Event.signInSuccess(option: option, user: user, isNewUser: isNewUser))
             return (user, isNewUser)
         } catch {
-            logger.trackEvent(event: Event.signInFail(error: error))
+            logger?.trackEvent(event: Event.signInFail(error: error))
             throw error
         }
     }
 
     public func signOut() throws {
-        self.logger.trackEvent(event: Event.signOutStart)
+        self.logger?.trackEvent(event: Event.signOutStart)
 
         do {
             try service.signOut()
             auth = nil
-            logger.trackEvent(event: Event.signOutSuccess)
+            logger?.trackEvent(event: Event.signOutSuccess)
         } catch {
-            logger.trackEvent(event: Event.signOutFail(error: error))
+            logger?.trackEvent(event: Event.signOutFail(error: error))
             throw error
         }
     }
 
     public func deleteAccount() async throws {
-        self.logger.trackEvent(event: Event.deleteAccountStart)
+        self.logger?.trackEvent(event: Event.deleteAccountStart)
 
         do {
             try await service.deleteAccount()
             auth = nil
-            logger.trackEvent(event: Event.deleteAccountSuccess)
+            logger?.trackEvent(event: Event.deleteAccountSuccess)
         } catch {
-            logger.trackEvent(event: Event.deleteAccountFail(error: error))
+            logger?.trackEvent(event: Event.deleteAccountFail(error: error))
             throw error
         }
     }
@@ -119,7 +118,7 @@ public class AuthManager {
 }
 
 extension AuthManager {
-    enum Event: LoggableEvent {
+    enum Event: AuthLogEvent {
         case authListenerSuccess(user: UserAuthInfo)
         case authlistenerEmpty
         case signInStart(option: SignInOption)
@@ -166,7 +165,7 @@ extension AuthManager {
             }
         }
 
-        var type: LogType {
+        var type: AuthLogType {
             switch self {
             case .signInFail, .signOutFail, .deleteAccountFail:
                 return .severe

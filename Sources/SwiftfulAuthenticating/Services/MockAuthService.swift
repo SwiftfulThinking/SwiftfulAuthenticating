@@ -39,7 +39,7 @@ public class MockAuthService: AuthService {
     public func signIn(option: SignInOption) async throws -> (user: UserAuthInfo, isNewUser: Bool) {
         switch option {
         case .apple, .google, .anonymous:
-            let user = UserAuthInfo.mock
+            let user = UserAuthInfo.mock(isAnonymous: false)
             currentUser = user
             return (user, false)
         }

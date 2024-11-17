@@ -55,7 +55,7 @@ public class AuthManager {
     }
     
     @discardableResult
-    public func signInAnonymous() async throws -> (user: UserAuthInfo, isNewUser: Bool) {
+    public func signInAnonymously() async throws -> (user: UserAuthInfo, isNewUser: Bool) {
         let result = try await signIn(option: .anonymous)
         setCurrentAuth(auth: result.user)
         return result

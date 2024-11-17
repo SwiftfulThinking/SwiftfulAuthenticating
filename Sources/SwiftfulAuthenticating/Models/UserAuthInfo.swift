@@ -73,7 +73,7 @@ public struct UserAuthInfo: Codable, Sendable {
         case lastSignInDate = "last_sign_in_date"
     }
 
-    static func mock(isAnonymous: Bool = false) -> Self {
+    public static func mock(isAnonymous: Bool = false) -> Self {
         UserAuthInfo(
             uid: "mock_user_123",
             email: "hello@gmail.com",

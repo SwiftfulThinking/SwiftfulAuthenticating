@@ -1,6 +1,6 @@
-<p align="left">
-    <img src="https://github.com/user-attachments/assets/a957e338-8c43-4fc5-bddf-f74edc129f80" alt="Swift Authentication" width="300px" />
-</p>
+❤️ This package is provided for free. Tips appreciated: https://www.buymeacoffee.com/nicksarno
+
+🚀 Learn how to build and use this package: https://www.swiftful-thinking.com/architecture
 
 # Authentication Manager for Swift 6 📝
 

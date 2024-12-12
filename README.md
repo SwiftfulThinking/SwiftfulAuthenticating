@@ -1,6 +1,4 @@
-❤️ This package is provided for free. Tips appreciated: https://www.buymeacoffee.com/nicksarno
-
-🚀 Learn how to build and use this package: https://www.swiftful-thinking.com/architecture
+### 🚀 Learn how to build and use this package: https://www.swiftful-thinking.com/offers/REyNLwwH
 
 # Authentication Manager for Swift 6 📝
 

@@ -7,7 +7,6 @@ public class AuthManager {
     private let service: AuthService
 
     public private(set) var auth: UserAuthInfo?
-    private var listener: (any NSObjectProtocol)?
     private var taskListener: Task<Void, Error>?
 
     public init(service: AuthService, logger: AuthLogger? = nil) {
@@ -25,18 +24,11 @@ public class AuthManager {
         return uid
     }
 
-    private func addAuthListener() {
-        // Remove old/previous listener
-        if let listener {
-            service.removeAuthenticatedUserListener(listener: listener)
-        }
-        
+    private func addAuthListener() {        
         // Attach new listener
         taskListener?.cancel()
         taskListener = Task {
-            for await value in service.addAuthenticatedUserListener(onListenerAttached: { listener in
-                self.listener = listener
-            }) {
+            for await value in service.addAuthenticatedUserListener() {
                 setCurrentAuth(auth: value)
             }
         }

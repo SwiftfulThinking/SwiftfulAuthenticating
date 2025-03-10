@@ -38,7 +38,7 @@ Task {
 <summary> Details (Click to expand) </summary>
 <br>
     
-#### Create an instance of PurchaseManager:
+#### Create an instance of AuthManager:
 
 ```swift
 let authManager = AuthManager(services: any AuthService, logger: LogManager?)

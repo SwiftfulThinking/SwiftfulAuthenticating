@@ -33,6 +33,8 @@ public struct SignInAppleButtonView: View {
     }
 }
 
+#if os(iOS)
+    
 private struct SignInWithAppleButtonViewRepresentable: UIViewRepresentable {
     let type: ASAuthorizationAppleIDButton.ButtonType
     let style: ASAuthorizationAppleIDButton.Style
@@ -52,6 +54,26 @@ private struct SignInWithAppleButtonViewRepresentable: UIViewRepresentable {
         
     }
 }
+    
+#elseif os(macOS)
+
+private struct SignInWithAppleButtonViewRepresentable: NSViewRepresentable {
+    let type: ASAuthorizationAppleIDButton.ButtonType
+    let style: ASAuthorizationAppleIDButton.Style
+    let cornerRadius: CGFloat
+    
+    func makeNSView(context: Context) -> some NSView {
+        let button = ASAuthorizationAppleIDButton(type: type, style: style)
+        button.cornerRadius = cornerRadius
+        return button
+    }
+    
+    func updateNSView(_ nsView: NSViewType, context: Context) {
+        
+    }
+}
+    
+#endif
 
 #Preview("SignInAppleButtonView") {
     ScrollView {

@@ -45,8 +45,8 @@ public class MockAuthService: AuthService {
         }
     }
 
-    public func deleteAccount(option: SignInOption, performDeleteActionsBeforeAuthIsRevoked: () async -> Void) async throws {
-        await performDeleteActionsBeforeAuthIsRevoked()
+    public func deleteAccount(option: SignInOption, performDeleteActionsBeforeAuthIsRevoked: () async throws -> Void) async throws {
+        try await performDeleteActionsBeforeAuthIsRevoked()
         currentUser = nil
     }
 

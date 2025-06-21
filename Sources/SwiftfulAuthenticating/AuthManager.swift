@@ -99,12 +99,12 @@ public class AuthManager {
         }
     }
 
-    public func deleteAccount(option: SignInOption, performDeleteActionsBeforeAuthIsRevoked: (() async -> Void)? = nil) async throws {
+    public func deleteAccount(option: SignInOption, performDeleteActionsBeforeAuthIsRevoked: (() async throws -> Void)? = nil) async throws {
         self.logger?.trackEvent(event: Event.deleteAccountStart)
 
         do {
             try await service.deleteAccount(option: option, performDeleteActionsBeforeAuthIsRevoked: {
-                await performDeleteActionsBeforeAuthIsRevoked?()
+                try await performDeleteActionsBeforeAuthIsRevoked?()
             })
             auth = nil
             logger?.trackEvent(event: Event.deleteAccountSuccess)

@@ -45,7 +45,7 @@ public class MockAuthService: AuthService {
         }
     }
 
-    public func deleteAccount() async throws {
+    public func deleteAccount(option: SignInOption) async throws {
         currentUser = nil
     }
 

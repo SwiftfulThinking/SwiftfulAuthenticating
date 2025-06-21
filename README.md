@@ -4,6 +4,8 @@
 
 A reusable AuthManager for Swift applications, built for Swift 6. Includes `@Observable` support.
 
+![Platform: iOS/macOS](https://img.shields.io/badge/platform-iOS%20%7C%20macOS-blue)
+
 Pre-built dependencies*:
 
 - Mock: Included

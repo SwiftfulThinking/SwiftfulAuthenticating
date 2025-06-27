@@ -119,12 +119,12 @@ try authManager.signOut()
 
 ### Delete account:
 
-To immediately delete the user's authentication:
+#### To immediately delete the user's authentication:
 ```swift
 try await authManager.deleteAccount()
 ```
 
-To first reauthenticate user and then revoke their token:
+#### To first reauthenticate user and then revoke their token:
 ```swift
 try await service.deleteAccountWithReauthentication(option: option, revokeToken: revokeToken, performDeleteActionsBeforeAuthIsRevoked: {
     // Perform final actions after reauthentication but before account deletion
@@ -132,7 +132,7 @@ try await service.deleteAccountWithReauthentication(option: option, revokeToken:
 })
 ```
 
-NOTE: If you choose to revoke the user's Apple SSO token, you MUST do additional setup in Firebase:
+#### NOTE: If you choose to revoke the user's Apple SSO token, you MUST do additional setup in Firebase:
 
 * Firebase -> Authentication -> Sign-in Method -> Apple ->
   * Add Services ID 

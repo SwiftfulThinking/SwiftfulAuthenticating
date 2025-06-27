@@ -126,7 +126,7 @@ try await authManager.deleteAccount()
 
 #### To first reauthenticate user and then revoke their token:
 ```swift
-try await service.deleteAccountWithReauthentication(option: option, revokeToken: revokeToken, performDeleteActionsBeforeAuthIsRevoked: {
+try await service.deleteAccountWithReauthentication(option: option, revokeToken: revokeToken, performDeleteActionsBeforeAuthIsDeleted: {
     // Perform final actions after reauthentication but before account deletion
     // ie. delete user's firestore data before they lost auth access through security rules
 })

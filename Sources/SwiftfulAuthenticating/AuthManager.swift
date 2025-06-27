@@ -113,12 +113,12 @@ public class AuthManager {
         }
     }
 
-    public func deleteAccountWithReauthentication(option: SignInOption, revokeToken: Bool, performDeleteActionsBeforeAuthIsRevoked: (() async throws -> Void)? = nil) async throws {
+    public func deleteAccountWithReauthentication(option: SignInOption, revokeToken: Bool, performDeleteActionsBeforeAuthIsDeleted: (() async throws -> Void)? = nil) async throws {
         self.logger?.trackEvent(event: Event.deleteAccountStart)
 
         do {
-            try await service.deleteAccountWithReauthentication(option: option, revokeToken: revokeToken, performDeleteActionsBeforeAuthIsRevoked: {
-                try await performDeleteActionsBeforeAuthIsRevoked?()
+            try await service.deleteAccountWithReauthentication(option: option, revokeToken: revokeToken, performDeleteActionsBeforeAuthIsDeleted: {
+                try await performDeleteActionsBeforeAuthIsDeleted?()
             })
             
             auth = nil

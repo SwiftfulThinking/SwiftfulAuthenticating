@@ -7,5 +7,5 @@ public protocol AuthService: Sendable {
     func signIn(option: SignInOption) async throws -> (user: UserAuthInfo, isNewUser: Bool)
     func signOut() throws
     func deleteAccount() async throws
-    func deleteAccountWithReauthentication(option: SignInOption, revokeToken: Bool, performDeleteActionsBeforeAuthIsRevoked: () async throws -> Void) async throws
+    func deleteAccountWithReauthentication(option: SignInOption, revokeToken: Bool, performDeleteActionsBeforeAuthIsDeleted: () async throws -> Void) async throws
 }

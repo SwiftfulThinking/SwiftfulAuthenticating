@@ -98,14 +98,29 @@ public class AuthManager {
             throw error
         }
     }
+    
+    public func deleteAccount() async throws {
+        self.logger?.trackEvent(event: Event.deleteAccountStart)
+        
+        do {
+            try await service.deleteAccount()
+            
+            auth = nil
+            logger?.trackEvent(event: Event.deleteAccountSuccess)
+        } catch {
+            logger?.trackEvent(event: Event.deleteAccountFail(error: error))
+            throw error
+        }
+    }
 
-    public func deleteAccount(option: SignInOption, performDeleteActionsBeforeAuthIsRevoked: (() async throws -> Void)? = nil) async throws {
+    public func deleteAccountWithReauthentication(option: SignInOption, revokeToken: Bool, performDeleteActionsBeforeAuthIsRevoked: (() async throws -> Void)? = nil) async throws {
         self.logger?.trackEvent(event: Event.deleteAccountStart)
 
         do {
-            try await service.deleteAccount(option: option, performDeleteActionsBeforeAuthIsRevoked: {
+            try await service.deleteAccountWithReauthentication(option: option, revokeToken: revokeToken, performDeleteActionsBeforeAuthIsRevoked: {
                 try await performDeleteActionsBeforeAuthIsRevoked?()
             })
+            
             auth = nil
             logger?.trackEvent(event: Event.deleteAccountSuccess)
         } catch {

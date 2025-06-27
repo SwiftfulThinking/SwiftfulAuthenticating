@@ -112,11 +112,33 @@ let authUser = authManager.auth
 let uid = try authManager.getAuthId()
 ```
 
-### Sign out or delete auth:
+### Sign out:
 ```swift
 try authManager.signOut()
+```
+
+### Delete account:
+
+#### To immediately delete the user's authentication:
+```swift
 try await authManager.deleteAccount()
 ```
+
+#### To first reauthenticate user and then revoke their token:
+```swift
+try await service.deleteAccountWithReauthentication(option: option, revokeToken: revokeToken, performDeleteActionsBeforeAuthIsDeleted: {
+    // Perform final actions after reauthentication but before account deletion
+    // ie. delete user's firestore data before they lost auth access through security rules
+})
+```
+
+#### NOTE: If you choose to revoke the user's Apple SSO token, you MUST do additional setup in Firebase:
+
+* Firebase -> Authentication -> Sign-in Method -> Apple ->
+  * Add Services ID 
+    * https://developer.apple.com/help/account/capabilities/configure-sign-in-with-apple-for-the-web
+  * Add OAuth code flow (Apple team ID, Key ID and Private Key)
+    * https://developer.apple.com/help/account/keys/create-a-private-key
 
 </details>
 

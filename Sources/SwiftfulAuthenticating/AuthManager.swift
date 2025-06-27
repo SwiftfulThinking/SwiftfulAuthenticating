@@ -63,7 +63,8 @@ public class AuthManager {
         try await signIn(option: .google(GIDClientID: GIDClientID))
     }
 
-    private func signIn(option: SignInOption) async throws -> (user: UserAuthInfo, isNewUser: Bool) {
+    @discardableResult
+    public func signIn(option: SignInOption) async throws -> (user: UserAuthInfo, isNewUser: Bool) {
         self.logger?.trackEvent(event: Event.signInStart(option: option))
         
         defer {
@@ -97,12 +98,29 @@ public class AuthManager {
             throw error
         }
     }
-
+    
     public func deleteAccount() async throws {
+        self.logger?.trackEvent(event: Event.deleteAccountStart)
+        
+        do {
+            try await service.deleteAccount()
+            
+            auth = nil
+            logger?.trackEvent(event: Event.deleteAccountSuccess)
+        } catch {
+            logger?.trackEvent(event: Event.deleteAccountFail(error: error))
+            throw error
+        }
+    }
+
+    public func deleteAccountWithReauthentication(option: SignInOption, revokeToken: Bool, performDeleteActionsBeforeAuthIsDeleted: (() async throws -> Void)? = nil) async throws {
         self.logger?.trackEvent(event: Event.deleteAccountStart)
 
         do {
-            try await service.deleteAccount()
+            try await service.deleteAccountWithReauthentication(option: option, revokeToken: revokeToken, performDeleteActionsBeforeAuthIsDeleted: {
+                try await performDeleteActionsBeforeAuthIsDeleted?()
+            })
+            
             auth = nil
             logger?.trackEvent(event: Event.deleteAccountSuccess)
         } catch {

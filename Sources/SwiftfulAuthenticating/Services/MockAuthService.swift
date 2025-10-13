@@ -20,10 +20,15 @@ public class MockAuthService: AuthService {
 
     public func addAuthenticatedUserListener() -> AsyncStream<UserAuthInfo?> {
         AsyncStream { continuation in
-            Task {
+            let task = Task {
                 for await value in $currentUser.values {
                     continuation.yield(value)
                 }
+                continuation.finish()
+            }
+
+            continuation.onTermination = { @Sendable _ in
+                task.cancel()
             }
         }
     }

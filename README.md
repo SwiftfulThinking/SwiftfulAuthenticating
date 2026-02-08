@@ -1,3 +1,5 @@
+### 🚀 Learn how to build and use this package: https://www.swiftful-thinking.com/offers/REyNLwwH
+
 # SwiftfulAuthenticating
 
 A reusable AuthManager for Swift applications, built for Swift 6. `AuthManager` wraps an `AuthService` implementation (Mock, Firebase, etc.) through a single API. Includes `@Observable` support.

@@ -233,6 +233,22 @@ try await authManager.signInAnonymously()
 
 </details>
 
+## Lost sessions (re-authentication)
+
+`AuthManager` remembers, in the keychain, that a real (non-anonymous) account signed in on this device /
+iCloud identity, and clears that marker on explicit sign-out or delete. When Firebase later drops the
+session (password reset, credential change, disabled user), use:
+
+```swift
+authManager.shouldBlockAnonMintForReauthentication  // no session + marker + budget: don't mint an anonymous user
+authManager.shouldPromptForReauthentication         // show a "sign back in" prompt
+authManager.recordReauthPromptDeclined()            // user dismissed the prompt
+authManager.lastSignInProvider                      // which button to pre-select
+```
+
+Configure with `AuthManager(service:logger:markerStore:reauthPromptPolicy:)`; use
+`InMemoryRealAccountMarkerStore()` in previews and tests.
+
 ## Claude Code
 
 This package includes a `.claude/swiftful-authenticating-rules.md` with usage guidelines, auth flow patterns, and integration advice for projects using [Claude Code](https://claude.ai/claude-code).

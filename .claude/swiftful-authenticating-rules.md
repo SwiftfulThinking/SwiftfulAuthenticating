@@ -24,6 +24,20 @@ authManager.deleteAccount()         // async throws
 authManager.deleteAccountWithReauthentication(option:revokeToken:performDeleteActionsBeforeAuthIsDeleted:)  // async throws
 ```
 
+Lost-session recovery (see **Lost sessions** below):
+
+```swift
+authManager.hadPreviousRealAccount              // Bool — THIS device had a real account and never signed out
+authManager.hadPreviousRealAccountOnAnyDevice   // Bool — this device OR this iCloud identity did
+authManager.lastRealAccountUid                  // String?
+authManager.lastSignInProvider                  // AuthProviderOption? — pre-select the sign-in button
+authManager.shouldBlockAnonMintForReauthentication  // Bool — do NOT mint an anonymous user; prompt instead
+authManager.shouldPromptForReauthentication         // Bool — show the "sign back in" prompt
+authManager.reauthPromptDeclineCount            // Int (persisted)
+authManager.recordReauthPromptDeclined()        // spend one strike
+authManager.reauthPromptPolicy                  // maxDeclines (10), foregroundRepromptInterval (12h)
+```
+
 **IMPORTANT**: `auth` is optional (`UserAuthInfo?`). Always use optional chaining: `authManager.auth?.uid`, not `authManager.auth.uid`.
 
 **IMPORTANT**: `signOut()` is synchronous — do NOT use `await` with it: `try authManager.signOut()`.
@@ -153,6 +167,40 @@ do {
     // Handle auth failure
 }
 ```
+
+### Lost sessions: never mint over a revoked real account
+
+Firebase drops a session silently when the server revokes it (password reset, credential change,
+disabled/deleted user — and `FirebaseAuthService` forces a token refresh on every listener fire, so
+this surfaces at launch). An anonymous-first app that reacts to `auth == nil` by minting a new
+anonymous user **replaces the real account with a junk one, and purchases follow it**.
+
+`AuthManager` keeps a `RealAccountMarker` in the keychain (device-local + iCloud-synced) for every
+real sign-in, clears it on explicit `signOut` / delete, and logs `Auth_SessionLost` when a session
+disappears for any other reason. Use the two predicates instead of `auth == nil`:
+
+```swift
+func checkUserStatus() async {
+    if let auth = authManager.auth {
+        try await logIn(user: auth, isNewUser: false)
+    } else if authManager.shouldBlockAnonMintForReauthentication {
+        // A real account lived here and the session was revoked: do NOT mint. Let the main screen
+        // present a "sign back in" prompt (authManager.shouldPromptForReauthentication).
+    } else {
+        let (user, isNewUser) = try await authManager.signInAnonymously()
+        try await logIn(user: user, isNewUser: isNewUser)
+    }
+}
+```
+
+Prompt rules: declining spends `recordReauthPromptDeclined()`; on the first (session-less) decline the
+app mints the anonymous user it skipped; later prompts run over that anonymous session until
+`reauthPromptPolicy.maxDeclines`. Any real sign-in rewrites the marker and resets the count. Never
+log the purchase service in as the replacement anonymous user while it still holds the real uid
+(compare `lastRealAccountUid` with `purchaseManager.currentUserId`).
+
+`AuthManager(service:logger:markerStore:reauthPromptPolicy:)` — pass `InMemoryRealAccountMarkerStore()`
+for previews and tests so they never touch the keychain.
 
 ### Anonymous-first authentication
 
@@ -324,6 +372,8 @@ AuthManager logs these events internally when a logger is provided:
 | `Auth_DeleteAccount_Start` | .info | Account deletion begins |
 | `Auth_DeleteAccount_Success` | .info | Account deletion succeeds |
 | `Auth_DeleteAccount_Fail` | .severe | Account deletion fails |
+| `Auth_SessionLost` | .warning | Auth listener went nil without an explicit sign-out / delete / sign-in in progress |
+| `Auth_ReauthPrompt_Declined` | .analytic | `recordReauthPromptDeclined()` (decline_count, max_declines) |
 
 These are logged by the AuthManager itself — you do NOT need to log them in your Presenter/ViewModel. Presenter-layer events should track user intent (e.g. "CreateAccountView_AppleAuth_Start"), not the auth operation itself.
 
